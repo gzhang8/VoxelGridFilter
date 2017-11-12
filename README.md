@@ -43,7 +43,7 @@ NOTE: just as a reference, if you download all the files but did not install it 
 
 A .pcd file is the standard file format for pcl point clouds. If we open a pcd file as it is or as a txt file, a bunch of unreadable ascii value will show up. In order to convert the file into something that makes sense there is a function built into the pcd library called pcl_convert_pcd_ascii_binary. The output .pcd file will have human readble data that we can use.
 
-	pcl_convert_pcd_ascii_binary <file_in.pcd> <file_out.pcd> 0/1/2 (ascii/binary/binary_compressed) 
+	pcl_convert_pcd_ascii_binary <file_in.pcd> <file_out.pcd> 0/1/2 (ascii/binary/binary_compressed) (we're using ascii)
 
 
 
@@ -64,8 +64,34 @@ The purpose of having a hash is to completely avoid actual plotting of the point
 
 Say that the leaf is <1,1,1>, that means for the first block we need to find all points x < 1 , y < 1, z < 1, condense it into 1 point located at the avg and finding average color. We can plot it all into a map and have the finding avg operation done when the points are inserted. Now in order for this to work we would need a perfect hashing function that won't have any unwanted collision with 96 bits (xyz are three floats). Mathematically speaking, given that our hash function can only have operations done to 64 bits this is not possible. However, we can test different hashing operations and catch all unwanted collision and test success rate of each
 
-A. Golden Ratio Hashing
+Name: test01.pcd
+Method: Prime Number combination
 
-B. Prime Number Hashing
+	long long int hash = (((((31 + xHash) * yHash) + 37) * 83) + zHash) * 131;
 
-C. 2 Layer Map
+Expected Count of Points: 1817
+Actual Count of Points: 1615
+Duration: 12 Seconds
+Analysis: Points in the middle cross section are missing and somehow ending up at the center of the image.
+
+Name: test02.pcd
+Method: Prime Number xor
+
+	long long int hash = ((xHash * 73856093) ^ (yHash * 19349669) ^ (zHash * 83492791)); //prime number hashing but without specifying size of hash
+
+Description:Hashing based on http://graphics.stanford.edu/~niessner/papers/2013/4hashing/niessner2013hashing.pdf where Niesser hashed exploiting the fact that many space on the graph is empty. Unlike his method, I never specified the size of Hash because I need perfect hashing but I can change this later
+Expected Count of Points: 1817
+Actual Count of Points: 1629
+Duration: 
+Analysis: Points appear in the center but no missing cross section like the method above 
+
+Name: N/A
+Method: Golden Ratio 
+
+		long long xy = (xHash << 32) | yHash;
+		xy ^= zHash + 0x9e3779b97f4a7c15 + (xy << 6) + (xy >> 2);
+
+Description:Hashing based on the boost library. Doesn't work sing original equation accounts for combining already hashed values. 
+Expected Count of Points: 1817
+Actual Count of Points: 367
+Ananlysis: N/A

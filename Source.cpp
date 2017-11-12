@@ -88,8 +88,8 @@ struct voxelHash {
 		int yHash = floor(y / leaf_y);
 		int zHash = floor(z / leaf_z);
 
-		long long int hash = (((((31 + xHash) * yHash) + 37) * 83) + zHash) * 131;
-
+		//long long int hash = (((((31 + xHash) * yHash) + 37) * 83) + zHash) * 131;
+		long long int hash = ((xHash * 73856093) ^ (yHash * 19349669) ^ (zHash * 83492791)); //prime number hashing but without specifying size of hash
 
 		return hash;
 
@@ -130,14 +130,24 @@ struct voxelHash {
 
 	void exportText() {
 
-	}
+		ofstream outFile("output.txt");
+		if (outFile.is_open()) {
 
+
+			for (auto i : vHash) {
+				outFile << to_string(i.second.x) + " " + to_string(i.second.y) + " " + to_string(i.second.z) + "\n";
+			}
+			
+			outFile.close();
+
+		}
+	}
 };
 
 
 int main()
 {
-	voxelHash temp(.1, .1, .1);
+	voxelHash temp(.01, .01, .01);
 	ifstream file("test.pcd");
 	string inLine;
 	string element;
@@ -156,9 +166,9 @@ int main()
 
 		}
 
-
-
 	}
+
+	temp.exportText();
 
 	return 0;
 }
