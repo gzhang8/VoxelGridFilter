@@ -5,13 +5,13 @@ tl;dr: How to use
 
 	pcl_convert_pcd_ascii_binary [input_file.pcd] test.pcd 0
 	g++ -std=c++11 doubleHash.cpp -o doubleHash
-	./a doubleHash
+	./doubleHash
 
 or for xorHash
 
 	pcl_convert_pcd_ascii_binary [input_file.pcd] test.pcd 0
 	g++ -std=c++11 xorHash.cpp -o xorHash
-	./a xorHash
+	./xorHash
 
 
 ---------------------------------------------------------------
