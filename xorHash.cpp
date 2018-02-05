@@ -87,9 +87,9 @@ struct node {
 
 	void avgNormal(float new_xn, float new_yn, float new_zn) {
 
-		x_normal = x + (new_xn - x_normal) / count;
-		y_normal = y + (new_yn - y_normal) / count;
-		z_normal = z + (new_zn - z_normal) / count;
+                x_normal = x_normal + (new_xn - x_normal) / count;
+                y_normal = y_normal + (new_yn - y_normal) / count;
+                z_normal = z_normal + (new_zn - z_normal) / count;
 	}
 
 
@@ -215,7 +215,7 @@ struct voxelHash {
 };
 
 
-int main()
+int init()
 {
 	voxelHash temp(.01, .01, .01);
 	ifstream file("test.pcd");
@@ -257,3 +257,26 @@ int main()
 	return 0;
 }
 
+
+int main()
+{
+        float avgTime = 0;
+        int j = 5;
+        for (int i = 0; i < j; i++) {
+                float startTime = (float)clock() / CLOCKS_PER_SEC;
+
+                init();
+
+                float endTime = (float)clock() / CLOCKS_PER_SEC;
+
+                cout << endTime - startTime << endl;
+
+                avgTime += endTime - startTime;
+        }
+        avgTime /= j;
+
+        cout << "Avg Time = " << avgTime;
+
+        return 0;
+
+}

@@ -7,6 +7,7 @@
 #include <stdlib.h> 
 #include <bitset> 
 #include <vector> 
+#include <time.h> 
 #include <math.h> 
 #include <algorithm> 
 #include <unordered_map>
@@ -78,11 +79,6 @@ struct node {
 
 	void avgColor(int new_color) {
 
-
-		//int red = sqrt(pow((RGB >> 16), 2) + (pow((new_color >> 16), 2) - pow((RGB >> 16), 2)) / count); // no need to shift left because first 8 int digit are 0s. 
-		//int blue = sqrt(pow((RGB << 16 >> 24), 2) + (pow((new_color << 16 >> 24), 2) - pow((RGB << 16 >> 24), 2)) / count);
-		//int green = sqrt(pow((RGB << 24 >> 24), 2) + (pow((new_color << 24 >> 24), 2) - pow((RGB << 24 >> 24), 2)) / count);
-
 		//RGB = (red<<16) | (blue<<8) | green ;
 
 		int a = ((RGB >> 16) + ((new_color >> 16) - (RGB >> 16)) / count) << 16; // no need to shift left because first 8 int digit are 0s. 
@@ -94,11 +90,20 @@ struct node {
 
 	void avgNormal(float new_xn, float new_yn, float new_zn) {
 
-		x_normal = x + (new_xn - x_normal) / count;
-		y_normal = y + (new_yn - y_normal) / count;
-		z_normal = z + (new_zn - z_normal) / count;
+		x_normal += (new_xn - x_normal) / count;
+		y_normal += (new_yn - y_normal) / count;
+		z_normal += (new_zn - z_normal) / count;
 	}
 
+	
+		/*This call finishes all calculations once it's confirmed that no new points will be added in*/
+		void lastCalcs() {
+
+			x_normal /= count;
+			y_normal /= count;
+			z_normal /= count;
+
+		}
 
 };
 
@@ -214,7 +219,7 @@ struct voxelHash {
 
 			for (auto j : vHash) {
 				for (auto i : j.second) {
-					//outFile << to_string(i.second.x) + " " + to_string(i.second.y) + " " + to_string(i.second.z) + "\n";
+					//i.second.lastCalcs();
 					outFile << to_string(i.second.x) + " " + to_string(i.second.y) + " " + to_string(i.second.z) + " " + to_string(i.second.RGB) + " " + to_string(i.second.x_normal) + " " + to_string(i.second.y_normal) + " " + to_string(i.second.z_normal) + " "+ "0" + "\n"; //the 0 is for curvature for right now
 				}
 			}
@@ -225,7 +230,7 @@ struct voxelHash {
 };
 
 
-int main()
+int init()
 {
 	voxelHash temp(.01, .01, .01);
 	ifstream file("test.pcd");
@@ -259,10 +264,33 @@ skip:
 			temp.addCoord(val);
 
 		}
-
 	}
 
 	temp.exportText();
 
 	return 0;
+}
+
+
+int main()//currently used to test the runtime
+{
+	float avgTime = 0;
+	int j = 5;
+	for (int i = 0; i < j; i++) {
+		float startTime = (float)clock() / CLOCKS_PER_SEC;
+
+		init();
+
+		float endTime = (float)clock() / CLOCKS_PER_SEC;
+
+		cout << endTime - startTime << endl;
+
+		avgTime += endTime - startTime;
+	}
+	avgTime /= j;
+
+	cout << "Avg Time = " << avgTime;
+
+	return 0;
+	
 }

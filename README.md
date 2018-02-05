@@ -5,13 +5,13 @@ tl;dr: How to use
 
 	pcl_convert_pcd_ascii_binary [input_file.pcd] test.pcd 0
 	g++ -std=c++11 doubleHash.cpp -o doubleHash
-	./doubleHash
+	./a doubleHash
 
 or for xorHash
 
 	pcl_convert_pcd_ascii_binary [input_file.pcd] test.pcd 0
 	g++ -std=c++11 xorHash.cpp -o xorHash
-	./xorHash
+	./a xorHash
 
 
 ---------------------------------------------------------------
@@ -124,7 +124,7 @@ Current Iteration Flaws:
 
 --------------------------------------------------------------------------------------------------------
 
-Method: Double Layered Perfect Hash
+Method: Double Layered Perfect Hash (best result currently)
 
 output file: all_method03.pcd
 
@@ -162,6 +162,7 @@ Actual Count of Points: 367
 
 Analysis: N/A
 
+--------------------------------------------------------------------------------------------------------
 
 STAGE 2: avg of color
 
@@ -176,3 +177,12 @@ The equation for finding the avg of the coordinates won't work in this case, ins
 	new_avg = sqrt(old_avg^2 + (new_val^2+old_avg^2)/count)
 
 Now I'll be completely honest, I got this equation with trial and error so I can't really explain how it works in a series. 
+
+
+STAGE 3: avg of normal
+
+Just take the avg. Don't try anything fancy like normalizing. Avg like we did using the coordinates and you'll get values close to the PCL's result.
+
+--------------------------------------------------------------------------------------------------------
+
+Base case works, now future work is to optimize. On my linux computer, it takes an average of 1.5 seconds to condense. The goal is to get that to .1 seconds. 
